@@ -3,9 +3,9 @@ SBCL Vagrant Virtual Machine
 
 ## Dependencies
 
-    * VirtualBox
-    - Vagrant
-    - Ansible
+* VirtualBox
+* Vagrant
+* Ansible
     
 ## Installation
 
