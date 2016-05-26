@@ -3,13 +3,14 @@ SBCL Vagrant Virtual Machine
 
 ## Dependencies
 
-    - VirtualBox
+    * VirtualBox
     - Vagrant
     - Ansible
     
 ## Installation
 
     host-os$ git clone https://github.com/ogimart/sbcl-vagrant-vm.git
+    host-os$ cd sbcl-vagrant-vm
     host-os$ vagrant up
     
 ## Example Usage

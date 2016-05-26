@@ -44,7 +44,7 @@
       shell: sbcl --load /home/vagrant/quicklisp.lisp --eval '(progn (quicklisp-quickstart:install :path "/home/vagrant/quicklisp/") (exit))' && chown -R vagrant:vagrant /home/vagrant/quicklisp
       args:
         creates: /home/vagrant/quicklisp
-    - name: copy sbcl-rc.lisp
+    - name: copy sbclrc.lisp
       copy: src=sbclrc.lisp dest=/home/vagrant/.sbclrc owner=vagrant group=vagrant
     - name: clean quicklisp 
       file: path=quicklisp.lisp state=absent
