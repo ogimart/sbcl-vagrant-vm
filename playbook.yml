@@ -1,0 +1,54 @@
+---
+- name: SBCL Development Server
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+
+  vars:
+    sbcl_ver: 1.3.5
+    slime_ver: v2.18
+
+  pre_tasks:
+    - name: update apt-cache
+      apt: update_cache=yes
+
+  tasks:
+    # git & tmux
+    - name: install git
+      apt: name=git
+    - name: install tmux
+      apt: name=tmux 
+
+    # SBCL
+    - name: get sbcl binary
+      get_url: url="http://prdownloads.sourceforge.net/sbcl/sbcl-{{sbcl_ver}}-x86-64-linux-binary.tar.bz2" dest=/home/vagrant
+    - name: unpack sbcl binary
+      unarchive: src="/home/vagrant/sbcl-{{sbcl_ver}}-x86-64-linux-binary.tar.bz2" dest=/home/vagrant copy=no
+    - name: install sbcl
+      shell: ./install.sh
+      args:
+        chdir: "sbcl-{{sbcl_ver}}-x86-64-linux"
+        executable: /bin/sh
+        creates: /usr/local/bin/sbcl
+    - name: clean sbcl archive
+      file: path="sbcl-{{sbcl_ver}}-x86-64-linux-binary.tar.bz2" state=absent
+    - name: clean sbcl install dir
+      file: path="sbcl-{{sbcl_ver}}-x86-64-linux" state=absent
+
+    # QuickLisp & slime
+    - name: get quicklisp
+      shell: curl -O https://beta.quicklisp.org/quicklisp.lisp
+      args:
+        creates: quicklisp.lisp
+    - name: initialize quicklisp
+      shell: sbcl --load /home/vagrant/quicklisp.lisp --eval '(progn (quicklisp-quickstart:install :path "/home/vagrant/quicklisp/") (exit))' && chown -R vagrant:vagrant /home/vagrant/quicklisp
+      args:
+        creates: /home/vagrant/quicklisp
+    - name: copy sbcl-rc.lisp
+      copy: src=sbclrc.lisp dest=/home/vagrant/.sbclrc owner=vagrant group=vagrant
+    - name: clean quicklisp 
+      file: path=quicklisp.lisp state=absent
+    - name: install slime/swank
+      git: repo=https://github.com/slime/slime.git dest=/home/vagrant/slime/ version={{slime_ver}}
+    - name: copy start-swank.lisp
+      copy: src=start-swank.lisp dest=/home/vagrant/ owner=vagrant group=vagrant
